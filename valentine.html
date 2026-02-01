@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valentine's Card for Sammie 💚</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #6b7f4a, #8fae6a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .card {
+      background: #dde4d6;
+	  border: 1px solid rgba(63, 79, 42, 0.12);
+      padding: 2.2rem 2rem;
+      border-radius: 32px;
+      box-shadow: 0 28px 55px rgba(0,0,0,0.18);
+      text-align: center;
+      max-width: 700px;
+      width: 94%;
+      animation: fadeIn 0.9s ease-out;
+      position: relative;
+    }
+
+    img {
+      width: 600px;
+      max-width: 100%;
+      margin-bottom: 0.3rem;
+      animation: float 3.6s ease-in-out infinite;
+      user-select: none;
+      -webkit-user-drag: none;
+      transition: transform 420ms ease, width 420ms ease, margin 420ms ease;
+    }
+
+    h1 {
+      font-size: 2.05rem;
+      margin: 0.6rem 0 0.8rem;
+      color: #3f4f2a;
+      line-height: 1.15;
+      transition: transform 420ms ease, margin 420ms ease;
+    }
+
+    /* Start: Buttons harmonisch nebeneinander */
+    #buttons {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 1.05rem 2.2rem;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 48px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s;
+      touch-action: manipulation;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+    }
+
+    .yes {
+      background: #7a9b57;
+      color: white;
+      position: relative;
+      z-index: 5; /* safety */
+    }
+
+    .no {
+      background: #d8ddcc;
+      color: #3f4f2a;
+      position: relative;
+      z-index: 4;
+    }
+
+    /* Sobald No "teleportiert": fixed, snappy */
+    #noBtn.is-flying {
+      position: fixed;
+      left: 0;
+      top: 0;
+      transform: none;
+      transition: none !important;
+      will-change: left, top, transform;
+      z-index: 6;
+    }
+
+    .result {
+      margin-top: 1rem;
+      font-size: 1.45rem;
+      color: #3f4f2a;
+      min-height: 2.4rem;
+    }
+
+    /* Extra Text nach YES */
+    .loveNote {
+      display: none;
+      margin-top: 0.9rem;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.55);
+      border-radius: 18px;
+      padding: 1rem 1.1rem;
+      color: #2f3a21;
+      line-height: 1.35;
+      box-shadow: inset 0 0 0 1px rgba(63, 79, 42, 0.10);
+    }
+
+    /* YES state: Bild kleiner + nach oben, Platz für Text */
+    .card.yesState img {
+      width: 430px;
+      transform: translateY(-12px);
+      margin-bottom: 0.1rem;
+      animation: none;
+    }
+
+    .card.yesState h1 {
+      margin-top: 0.1rem;
+      margin-bottom: 0.6rem;
+      transform: translateY(-6px);
+    }
+
+    .card.yesState .loveNote {
+      display: block;
+    }
+
+    .actions {
+      margin-top: 0.8rem;
+      display: none;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .back {
+      background: rgba(63, 79, 42, 0.12);
+      color: #3f4f2a;
+    }
+
+    .music {
+      background: rgba(63, 79, 42, 0.12);
+      color: #3f4f2a;
+      opacity: 0.9;
+      display: none;
+    }
+
+    /* Flower burst */
+    .petal {
+      position: fixed;
+      pointer-events: none;
+      animation: pop 950ms ease-out forwards;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.18));
+      will-change: transform, opacity;
+      z-index: 7;
+    }
+
+    @keyframes pop {
+      0%   { transform: translate(-50%, -50%) translate(0,0) scale(0.9); opacity: 0; }
+      12%  { opacity: 1; }
+      100% { transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(1.4); opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-6px); }
+    }
+
+    @media (max-width: 520px) {
+      h1 { font-size: 1.6rem; }
+      button { font-size: 1.05rem; padding: 0.95rem 1.7rem; }
+      .card.yesState img { width: 320px; }
+      .loveNote { font-size: 0.98rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card" id="card">
+    <img id="flowerImg" src="hibiscus_for_sammie.png" alt="her favorite flower">
+    <h1 id="titleText">Sammie, will you be my Valentine? 🍒💬</h1>
+
+    <div id="buttons">
+      <button class="yes" id="yesBtn">Yessss!</button>
+      <button class="no" id="noBtn">Noooo :(</button>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <div class="loveNote" id="loveNote">
+      <div style="font-weight: 650; margin-bottom: 0.5rem;">Tiny cheerful note :)</div>
+      <div>I know you're having a hard time right now because your dear friends are leaving...</div>
+      <div>That's why I wanted to surprise you with this little <em>thing</em></div>
+	  <div>I hope it made you smile and lighten your heart a little</div>
+      <div>I'm grateful that you took the time and effort to get to know me</div>
+	  <div>All those updates, texts and hourlong calls really brightened up my days</div>
+	  <div>And I'm  excited for everything that is yet to come</div>
+    </div>
+
+    <div class="actions" id="actions">
+      <button class="back" id="backBtn">← Back</button>
+      <button class="music" id="musicBtn">🎵 Play music</button>
+    </div>
+  </div>
+
+  <!-- Put music.mp3 next to index.html in repo root -->
+  <audio id="bgMusic" preload="auto" loop>
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const card = document.getElementById("card");
+    const flowerImg = document.getElementById("flowerImg");
+    const titleText = document.getElementById("titleText");
+
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const buttons = document.getElementById("buttons");
+    const result = document.getElementById("result");
+
+    const loveNote = document.getElementById("loveNote");
+    const actions = document.getElementById("actions");
+    const backBtn = document.getElementById("backBtn");
+
+    const bgMusic = document.getElementById("bgMusic");
+    const musicBtn = document.getElementById("musicBtn");
+
+    let dodgeCount = 0;
+    const DODGE_LIMIT = 6;
+    let noStoppedDodging = false;
+    let noIsFlying = false;
+
+    // -------- Music (robust, user gesture) --------
+    let musicStarted = false;
+
+    function fadeVolume(target = 0.12, ms = 800) {
+      const start = bgMusic.volume || 0;
+      const t0 = performance.now();
+      function step(t) {
+        const p = Math.min(1, (t - t0) / ms);
+        bgMusic.volume = start + (target - start) * p;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    async function startMusic() {
+      if (musicStarted) return;
+      musicStarted = true;
+      try {
+        bgMusic.volume = 0.0;
+        await bgMusic.play();
+        fadeVolume(0.12, 800);
+        musicBtn.style.display = "none";
+      } catch (e) {
+        musicBtn.style.display = "inline-block";
+      }
+    }
+
+    document.addEventListener("pointerdown", startMusic, { once: true });
+
+    musicBtn.addEventListener("click", async () => {
+      musicStarted = false;
+      await startMusic();
+    });
+
+    // -------- Flower burst (center of card) --------
+    function burstFlowers(count = 34) {
+      const r = card.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const flowers = ["🌸","🌺","🌷","🌼","💐","🪻"];
+
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement("div");
+        p.className = "petal";
+        p.textContent = flowers[Math.floor(Math.random() * flowers.length)];
+        p.style.left = cx + "px";
+        p.style.top = cy + "px";
+        p.style.fontSize = (18 + Math.random() * 18) + "px";
+        p.style.setProperty("--dx", (Math.random() * 380 - 190) + "px");
+        p.style.setProperty("--dy", (Math.random() * -420 - 70) + "px");
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 1000);
+      }
+    }
+
+    // -------- Helpers: forbidden zones (YES, image, title) --------
+    function rect(el) {
+      const r = el.getBoundingClientRect();
+      return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height };
+    }
+
+    function intersects(a, b, pad = 10) {
+      return !(
+        a.right + pad < b.left ||
+        a.left > b.right + pad ||
+        a.bottom + pad < b.top ||
+        a.top > b.bottom + pad
+      );
+    }
+
+    function clamp(n, lo, hi) {
+      return Math.max(lo, Math.min(hi, n));
+    }
+
+    function ensureFlying() {
+      if (noIsFlying) return;
+
+      const r = noBtn.getBoundingClientRect();
+      noBtn.classList.add("is-flying");
+      noBtn.style.left = r.left + "px";
+      noBtn.style.top  = r.top  + "px";
+      noBtn.style.transform = "none";
+      noIsFlying = true;
+    }
+
+    // -------- EXTREME far dodge (viewport-wide) --------
+    function dodgeFar() {
+      if (noStoppedDodging) return;
+
+      dodgeCount++;
+
+      if (dodgeCount >= DODGE_LIMIT) {
+        noStoppedDodging = true;
+        noBtn.textContent = "welp, no";
+        result.textContent = "You caught me 😴";
+        return;
+      }
+
+      ensureFlying();
+
+      const pad = 8;
+      const bw = noBtn.offsetWidth;
+      const bh = noBtn.offsetHeight;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      const curX = parseFloat(noBtn.style.left) || 0;
+      const curY = parseFloat(noBtn.style.top) || 0;
+
+      const forbidden = [
+        rect(yesBtn),
+        rect(flowerImg),
+        rect(titleText)
+      ];
+
+      // VERY far teleport preference
+      const MIN_DIST = Math.max(vw, vh) * 0.75;
+
+      let best = null;
+
+      for (let i = 0; i < 180; i++) {
+        const x = Math.random() * (vw - bw - pad * 2) + pad;
+        const y = Math.random() * (vh - bh - pad * 2) + pad;
+
+        const candidate = { left: x, top: y, right: x + bw, bottom: y + bh };
+
+        let ok = true;
+        for (const f of forbidden) {
+          if (intersects(candidate, f, 18)) { ok = false; break; }
+        }
+        if (!ok) continue;
+
+        const dist = Math.hypot(x - curX, y - curY);
+        if (!best || dist > best.dist) best = { x, y, dist };
+        if (dist >= MIN_DIST) { best = { x, y, dist }; break; }
+      }
+
+      if (!best) return;
+
+      noBtn.style.left = clamp(best.x, pad, vw - bw - pad) + "px";
+      noBtn.style.top  = clamp(best.y, pad, vh - bh - pad) + "px";
+
+      noBtn.animate(
+        [
+          { transform: "scale(1)" },
+          { transform: "scale(1.35) rotate(-6deg)" },
+          { transform: "scale(1)" }
+        ],
+        { duration: 140, easing: "steps(2, end)" }
+      );
+    }
+
+    // -------- Answer + Reset --------
+    function showActions() {
+      actions.style.display = "flex";
+      if (!musicStarted) musicBtn.style.display = "inline-block";
+    }
+
+function answerYes() {
+  startMusic();
+  burstFlowers(36);
+
+  card.classList.add("yesState");
+
+  titleText.style.display = "none"; // 👈 Titel weg
+  buttons.style.display = "none";
+  result.innerHTML = "Yaay, thanks for <em>voluntarily</em> agreeing! 😚";
+  loveNote.style.display = "block";
+  showActions();
+}
+
+    function answerNo() {
+      startMusic();
+	  titleText.style.display = "none";
+      buttons.style.display = "none";
+      result.innerHTML = "Thanks for being honest and please don't feel pressured! 🕊️";
+      loveNote.style.display = "none";
+      showActions();
+    }
+
+    function resetAll() {
+      buttons.style.display = "flex";
+      result.textContent = "";
+      actions.style.display = "none";
+      card.classList.remove("yesState");
+      loveNote.style.display = "none";
+	  
+	  titleText.style.display = "";
+
+      dodgeCount = 0;
+      noStoppedDodging = false;
+      noBtn.textContent = "Noooo :(";
+
+      noBtn.classList.remove("is-flying");
+      noBtn.style.left = "";
+      noBtn.style.top = "";
+      noBtn.style.transform = "";
+      noIsFlying = false;
+    }
+
+    // Events
+    yesBtn.addEventListener("click", answerYes);
+
+    // Desktop hover = jump far
+    noBtn.addEventListener("mouseenter", () => {
+      if (!noStoppedDodging) {
+        result.textContent = "Nope 😇";
+        dodgeFar();
+      }
+    });
+
+    // Mobile tap = jump far
+    noBtn.addEventListener("touchstart", (e) => {
+      if (!noStoppedDodging) {
+        result.textContent = "Hehe nope 😄";
+        dodgeFar();
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    // Clicking No always means No
+    noBtn.addEventListener("click", answerNo);
+
+    backBtn.addEventListener("click", resetAll);
+
+    // Keep flying button inside viewport after resize
+    window.addEventListener("resize", () => {
+      if (!noIsFlying) return;
+      const bw = noBtn.offsetWidth, bh = noBtn.offsetHeight;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const x = clamp(parseFloat(noBtn.style.left) || 0, 8, vw - bw - 8);
+      const y = clamp(parseFloat(noBtn.style.top) || 0, 8, vh - bh - 8);
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    });
+  </script>
+</body>
+</html>
