@@ -15,11 +15,14 @@
       justify-content: center;
       min-height: 100vh;
       overflow: hidden;
+      /* ✅ Platz für fixed Actions auf Mobile */
+      padding-bottom: 96px;
+      box-sizing: border-box;
     }
 
     .card {
       background: #dde4d6;
-	  border: 1px solid rgba(63, 79, 42, 0.12);
+      border: 1px solid rgba(63, 79, 42, 0.12);
       padding: 2.2rem 2rem;
       border-radius: 32px;
       box-shadow: 0 28px 55px rgba(0,0,0,0.18);
@@ -38,6 +41,7 @@
       user-select: none;
       -webkit-user-drag: none;
       transition: transform 420ms ease, width 420ms ease, margin 420ms ease;
+      cursor: pointer; /* ✅ signal: clickable */
     }
 
     h1 {
@@ -157,6 +161,29 @@
       display: none;
     }
 
+    /* ✅ Mobile: Actions fixed unten sichtbar */
+    @media (max-width: 520px) {
+      h1 { font-size: 1.6rem; }
+      button { font-size: 1.05rem; padding: 0.95rem 1.7rem; }
+      .card.yesState img { width: 320px; }
+      .loveNote { font-size: 0.98rem; }
+
+      .actions {
+        position: fixed;
+        left: 50%;
+        bottom: 14px;
+        transform: translateX(-50%);
+        width: calc(100% - 24px);
+        z-index: 50;
+        padding: 10px 12px;
+        border-radius: 18px;
+        background: rgba(242, 244, 236, 0.78);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+      }
+    }
+
     /* Flower burst */
     .petal {
       position: fixed;
@@ -183,13 +210,6 @@
       0%, 100% { transform: translateY(0); }
       50%      { transform: translateY(-6px); }
     }
-
-    @media (max-width: 520px) {
-      h1 { font-size: 1.6rem; }
-      button { font-size: 1.05rem; padding: 0.95rem 1.7rem; }
-      .card.yesState img { width: 320px; }
-      .loveNote { font-size: 0.98rem; }
-    }
   </style>
 </head>
 
@@ -209,10 +229,10 @@
       <div style="font-weight: 650; margin-bottom: 0.5rem;">Tiny cheerful note :)</div>
       <div>I know you're having a hard time right now because your dear friends are leaving...</div>
       <div>That's why I wanted to surprise you with this little <em>thing</em></div>
-	  <div>I hope it made you smile and lighten your heart a little</div>
+      <div>I hope it made you smile and lighten your heart a little</div>
       <div>I'm grateful that you took the time and effort to get to know me</div>
-	  <div>All those updates, texts and hourlong calls really brightened up my days</div>
-	  <div>And I'm  excited for everything that is yet to come</div>
+      <div>All those updates, texts and hourlong calls really brightened up my days</div>
+      <div>And I'm  excited for everything that is yet to come</div>
     </div>
 
     <div class="actions" id="actions">
@@ -247,6 +267,25 @@
     const DODGE_LIMIT = 6;
     let noStoppedDodging = false;
     let noIsFlying = false;
+
+    // ✅ Easter egg: ONLY when clicking the image 4x -> redirect
+    let imgTapCount = 0;
+    let imgTapTimer = null;
+
+    flowerImg.addEventListener("click", (e) => {
+      // make sure only the image click counts
+      e.stopPropagation();
+
+      imgTapCount += 1;
+
+      if (imgTapTimer) clearTimeout(imgTapTimer);
+      imgTapTimer = setTimeout(() => { imgTapCount = 0; }, 1500);
+
+      if (imgTapCount >= 4) {
+        imgTapCount = 0;
+        window.location.href = "surprise.html";
+      }
+    });
 
     // -------- Music (robust, user gesture) --------
     let musicStarted = false;
@@ -364,7 +403,6 @@
         rect(titleText)
       ];
 
-      // VERY far teleport preference
       const MIN_DIST = Math.max(vw, vh) * 0.75;
 
       let best = null;
@@ -407,22 +445,23 @@
       if (!musicStarted) musicBtn.style.display = "inline-block";
     }
 
-function answerYes() {
-  startMusic();
-  burstFlowers(36);
+    function answerYes() {
+      startMusic();
+      burstFlowers(36);
 
-  card.classList.add("yesState");
+      card.classList.add("yesState");
 
-  titleText.style.display = "none"; // 👈 Titel weg
-  buttons.style.display = "none";
-  result.innerHTML = "Yaay, thanks for <em>voluntarily</em> agreeing! 😚";
-  loveNote.style.display = "block";
-  showActions();
-}
+      titleText.style.display = "none";
+      buttons.style.display = "none";
+      result.innerHTML = "Yaay, thanks for <em>voluntarily</em> agreeing! 😚";
+      loveNote.style.display = "block";
+      showActions();
+    }
 
     function answerNo() {
       startMusic();
-	  titleText.style.display = "none";
+      titleText.style.display = "none";
+
       buttons.style.display = "none";
       result.innerHTML = "Thanks for being honest and please don't feel pressured! 🕊️";
       loveNote.style.display = "none";
@@ -435,8 +474,8 @@ function answerYes() {
       actions.style.display = "none";
       card.classList.remove("yesState");
       loveNote.style.display = "none";
-	  
-	  titleText.style.display = "";
+
+      titleText.style.display = "";
 
       dodgeCount = 0;
       noStoppedDodging = false;
